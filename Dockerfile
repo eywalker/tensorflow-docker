@@ -8,6 +8,7 @@ RUN apt-get update &&\
                        vim \
                        curl \
                        wget \
+                       pkg-config \
                        libfreetype6-dev \
                        libssl-dev \
                        libreadline-dev \
