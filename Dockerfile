@@ -37,7 +37,8 @@ RUN pip3 --no-cache-dir install \
     python -m ipykernel.kernelspec
 
 # Set path to TensorFlow binary
-ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.9.0-cp34-cp34m-linux_x86_64.whl
+ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0rc0-cp34-cp34m-linux_x86_64.whl
+
 
 # Install TensorFlow
 RUN pip --no-cache-dir install --upgrade $TF_BINARY_URL
@@ -56,7 +57,7 @@ ADD run_jupyter.sh /
 
 # Add Jupyter Notebook config
 ADD jupyter_notebook_config.py /root/.jupyter/
-                       
+
 WORKDIR /notebooks
 
 ENTRYPOINT ["/run_jupyter.sh"]
