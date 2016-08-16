@@ -54,11 +54,11 @@ EXPOSE 8888
 # from Docker ENTRYPOINT or CMD. 
 # Use dumb shell script that runs `jupyter notebook` :(
 # https://github.com/ipython/ipython/issues/7062
-ADD run_jupyter.sh /
+ADD run_tensorflow.sh /
 
 # Add Jupyter Notebook config
 ADD jupyter_notebook_config.py /root/.jupyter/
 
 WORKDIR /notebooks
 
-ENTRYPOINT ["/run_jupyter.sh"]
+ENTRYPOINT ["/run_tensorflow.sh"]
