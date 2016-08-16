@@ -1,5 +1,5 @@
 # Tensorflow supports only upto CUDNN v4
-FROM nvidia/cuda:7.5-cudnn4-devel
+FROM ubuntu:14.04.5
 MAINTAINER Edgar Y. Walker <edgar.walker@gmail.com>
 
 # Install essential Ubuntu packages and update pip
@@ -38,8 +38,7 @@ RUN pip3 --no-cache-dir install \
     python -m ipykernel.kernelspec
 
 # Set path to TensorFlow binary
-ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0rc0-cp34-cp34m-linux_x86_64.whl
-
+ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp34-cp34m-linux_x86_64.whl
 
 # Install TensorFlow
 RUN pip --no-cache-dir install --upgrade $TF_BINARY_URL
