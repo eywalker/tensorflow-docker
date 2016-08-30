@@ -8,8 +8,10 @@ services:
 script:
   - docker build -t eywalker/tensorflow .
   - docker build -t eywalker/tensorflow:cuda -f Dockerfile.cuda .
+  - docker build -t eywalker/tensorflow:cuda8.0-cudnn5 -f Dockerfile.build .
 
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push eywalker/tensorflow
   - docker push eywalker/tensorflow:cuda
+  - docker push eywalker/tensorflow:cuda8.0-cudnn5
