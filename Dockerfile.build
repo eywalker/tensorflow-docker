@@ -1,5 +1,5 @@
-# Tensorflow supports only upto CUDNN v4
-FROM nvidia/cuda:8.0-cudnn5-devel
+# Build Tensorflow with support cuDNN v5
+FROM eywalker/nvidia-cuda:8.0-cudnn5-devel-ubuntu16.04
 MAINTAINER Edgar Y. Walker <edgar.walker@gmail.com>
 
 # Install essential Ubuntu packages, Oracle Java 8,
@@ -47,10 +47,15 @@ RUN pip3 --no-cache-dir install \
          matplotlib \
          scipy \
          pandas \
-         jupyter
+         jupyter \
+         scikit-learn \
+         seaborn
 
 # Get TensorFlow
-RUN git clone https://github.com/tensorflow/tensorflow
+ENV TF_TAG v0.10.0rc0
+RUN git clone https://github.com/tensorflow/tensorflow &&\
+    cd tensorflow &&\
+    git checkout tags/$TF_TAG
 
 # Set env variables for configure script
 ENV PYTHON_BIN_PATH="/usr/bin/python3" TF_NEED_GCP=0 TF_NEED_CUDA=1 TF_CUDA_VERSION=8.0 TF_CUDNN_VERSION=5 TF_CUDA_COMPUTE_CAPABILITIES=5.2,6.1
@@ -72,11 +77,12 @@ EXPOSE 8888
 # from Docker ENTRYPOINT or CMD.
 # Use dumb shell script that runs `jupyter notebook` :(
 # https://github.com/ipython/ipython/issues/7062
-ADD run_tensorflow.sh /
+RUN mkdir /scripts
+ADD ./run_tensorflow.sh /scripts/
 
 # Add Jupyter Notebook config
-ADD jupyter_notebook_config.py /root/.jupyter/
+ADD ./jupyter_notebook_config.py /root/.jupyter/
 
 WORKDIR /notebooks
 
-ENTRYPOINT ["/run_tensorflow.sh"]
+ENTRYPOINT ["/scripts/run_tensorflow.sh"]
