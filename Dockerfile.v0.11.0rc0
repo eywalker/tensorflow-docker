@@ -52,7 +52,7 @@ RUN pip3 --no-cache-dir install \
          seaborn
 
 # Get TensorFlow
-ENV TF_TAG v0.10.0rc0
+ENV TF_TAG v0.11.0rc0
 RUN git clone https://github.com/tensorflow/tensorflow &&\
     cd tensorflow &&\
     git checkout tags/$TF_TAG
@@ -84,5 +84,8 @@ ADD ./run_tensorflow.sh /scripts/
 ADD ./jupyter_notebook_config.py /root/.jupyter/
 
 WORKDIR /notebooks
+
+# Add profiling library support
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
 
 ENTRYPOINT ["/scripts/run_tensorflow.sh"]

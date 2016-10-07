@@ -61,4 +61,7 @@ ADD jupyter_notebook_config.py /root/.jupyter/
 
 WORKDIR /notebooks
 
+# Add profiling library support
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
+
 ENTRYPOINT ["/run_tensorflow.sh"]
