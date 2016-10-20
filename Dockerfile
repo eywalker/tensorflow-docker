@@ -1,5 +1,5 @@
 # Tensorflow supports only upto CUDNN v4
-FROM ubuntu:14.04.5
+FROM ubuntu:16.04
 MAINTAINER Edgar Y. Walker <edgar.walker@gmail.com>
 
 # Install essential Ubuntu packages and update pip
@@ -38,26 +38,7 @@ RUN pip3 --no-cache-dir install \
     python -m ipykernel.kernelspec
 
 # Set path to TensorFlow binary
-ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp34-cp34m-linux_x86_64.whl
+ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0rc0-cp35-cp35m-linux_x86_64.whl
 
 # Install TensorFlow
 RUN pip --no-cache-dir install --upgrade $TF_BINARY_URL
-
-# Expose port for TensorBoard
-EXPOSE 6006
-
-# Expose port for Jupyter Notebook
-EXPOSE 8888
-
-# Hack to deal with weird bug that prevents running `jupyter notebook` directly
-# from Docker ENTRYPOINT or CMD. 
-# Use dumb shell script that runs `jupyter notebook` :(
-# https://github.com/ipython/ipython/issues/7062
-ADD run_tensorflow.sh /
-
-# Add Jupyter Notebook config
-ADD jupyter_notebook_config.py /root/.jupyter/
-
-WORKDIR /notebooks
-
-ENTRYPOINT ["/run_tensorflow.sh"]
