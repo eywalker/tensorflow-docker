@@ -1,4 +1,4 @@
-# Tensorflow supports only upto CUDNN v4
+# Tensorflow for CPU
 FROM ubuntu:16.04
 MAINTAINER Edgar Y. Walker <edgar.walker@gmail.com>
 
