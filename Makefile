@@ -7,7 +7,7 @@ build:
 	sudo docker build -t eywalker/tensorflow:v0.11.0rc0 .
 	sudo docker tag eywalker/tensorflow:v0.11.0rc0 eywalker/tensorflow
 
-push: build
+push:
 	sudo docker push eywalker/tensorflow:v0.11.0rc0-cuda8.0-cudnn5
 	sudo docker push eywalker/tensorflow:v0.10.0-cuda8.0-cudnn5
 	sudo docker push eywalker/tensorflow:cuda
