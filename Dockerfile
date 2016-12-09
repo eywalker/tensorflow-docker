@@ -20,7 +20,8 @@ RUN apt-get update &&\
                        libblas-dev \
                        liblapack-dev \
                        python3-dev \
-                       python3-pip &&\
+                       python3-pip \
+                       python3-tk &&\
     ln -s /usr/bin/python3 /usr/bin/python &&\
     ln -s /usr/bin/pip3 /usr/bin/pip &&\
     pip install --upgrade pip &&\
@@ -38,7 +39,7 @@ RUN pip3 --no-cache-dir install \
     python -m ipykernel.kernelspec
 
 # Set path to TensorFlow binary
-ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0rc0-cp35-cp35m-linux_x86_64.whl
+ENV TF_BINARY_URL https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp35-cp35m-linux_x86_64.whl
 
 # Install TensorFlow
 RUN pip --no-cache-dir install --upgrade $TF_BINARY_URL
