@@ -61,11 +61,13 @@ RUN git clone https://github.com/tensorflow/tensorflow &&\
     git checkout tags/$TF_TAG
 
 # Set env variables for configure script
-ENV PYTHON_BIN_PATH="/usr/bin/python3" TF_NEED_GCP=0 TF_NEED_CUDA=1 TF_CUDA_VERSION=8.0 TF_CUDNN_VERSION=5 TF_CUDA_COMPUTE_CAPABILITIES=5.2,6.1 TF_NEED_HDFS=1 USE_DEFAULT_PYTHON_LIB_PATH=1 TF_NEED_OPENCL=0
+ENV PYTHON_BIN_PATH="/usr/bin/python3" TF_NEED_GCP=0 TF_NEED_CUDA=1 TF_CUDA_VERSION=8.0 TF_CUDNN_VERSION=5 TF_CUDA_COMPUTE_CAPABILITIES=5.2,6.1 TF_NEED_HDFS=1 USE_DEFAULT_PYTHON_LIB_PATH=1 TF_NEED_OPENCL=0 GCC_HOST_COMPILER_PATH="/usr/bin/gcc" CUDA_TOOLKIT_PATH="/usr/local/cuda" CUDNN_INSTALL_PATH="/usr/local/cuda"
 
-WORKDIR /src/tensorflow
-#RUN ./configure
-#RUN bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_package
-#RUN bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-#RUN pip3 install /tmp/tensorflow_pkg/tensorflow-*.whl
-#
+RUN cd tensorflow &&\
+    ./configure &&\
+    bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_package &&\
+    bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg &&\
+    pip3 install /tmp/tensorflow_pkg/tensorflow-*.whl
+
+# Add profiling library support
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
