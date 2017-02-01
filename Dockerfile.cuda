@@ -1,5 +1,5 @@
 # Build Tensorflow with support cuDNN v5
-FROM eywalker/nvidia-cuda:8.0-cudnn5-devel-ubuntu16.04
+FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04
 MAINTAINER Edgar Y. Walker <edgar.walker@gmail.com>
 
 # Install essential Ubuntu packages, Oracle Java 8,
@@ -26,8 +26,8 @@ RUN apt-get update &&\
     echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections &&\
     echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections &&\
     apt-get install -y oracle-java8-installer &&\
-    ln -s /usr/bin/python3 /usr/bin/python &&\
-    ln -s /usr/bin/pip3 /usr/bin/pip &&\
+    ln -s /usr/bin/python3 /usr/local/bin/python &&\
+    ln -s /usr/bin/pip3 /usr/local/bin/pip &&\
     pip install --upgrade pip &&\
     apt-get clean &&\
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -35,14 +35,15 @@ RUN apt-get update &&\
 WORKDIR /src
 
 # Install Bazel from source
-ENV BAZEL_VER 0.3.1
+ENV BAZEL_VER 0.4.3
 ENV BAZEL_INSTALLER bazel-$BAZEL_VER-installer-linux-x86_64.sh
 ENV BAZEL_URL https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VER/$BAZEL_INSTALLER
 RUN wget $BAZEL_URL &&\
     wget $BAZEL_URL.sha256 &&\
     sha256sum -c $BAZEL_INSTALLER.sha256 &&\
     chmod +x $BAZEL_INSTALLER &&\
-    ./$BAZEL_INSTALLER
+    ./$BAZEL_INSTALLER &&\
+    rm /src/*
 
 # Install essential Python packages
 RUN pip3 --no-cache-dir install \
@@ -53,21 +54,26 @@ RUN pip3 --no-cache-dir install \
          jupyter \
          scikit-learn \
          seaborn
+          
+ARG TF_TAG=v1.0.0-rc0
+ENV TF_TAG $TF_TAG
 
 # Get TensorFlow
-ENV TF_TAG v0.11.0
 RUN git clone https://github.com/tensorflow/tensorflow &&\
     cd tensorflow &&\
     git checkout tags/$TF_TAG
 
 # Set env variables for configure script
-ENV PYTHON_BIN_PATH="/usr/bin/python3" TF_NEED_GCP=0 TF_NEED_CUDA=1 TF_CUDA_VERSION=8.0 TF_CUDNN_VERSION=5 TF_CUDA_COMPUTE_CAPABILITIES=5.2,6.1
+ENV PYTHON_BIN_PATH="/usr/bin/python3" TF_NEED_GCP=0 TF_NEED_CUDA=1 TF_CUDA_VERSION=8.0 TF_CUDNN_VERSION=5 TF_CUDA_COMPUTE_CAPABILITIES=5.2,6.1 TF_NEED_HDFS=1 USE_DEFAULT_PYTHON_LIB_PATH=1 TF_NEED_OPENCL=0 GCC_HOST_COMPILER_PATH="/usr/bin/gcc" CUDA_TOOLKIT_PATH="/usr/local/cuda" CUDNN_INSTALL_PATH="/usr/local/cuda" CC_OPT_FLAGS="-march=native" TF_NEED_JEMALLOC=1 TF_ENABLE_XLA=0
 
 RUN cd tensorflow &&\
+    sed -i "s#zlib.net/zlib-#zlib.net/fossils/zlib-#g" tensorflow/workspace.bzl &&\
     ./configure &&\
     bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_package &&\
     bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg &&\
-    pip3 install /tmp/tensorflow_pkg/tensorflow-*.whl
+    pip3 install /tmp/tensorflow_pkg/tensorflow-*.whl &&\
+    cd .. &&\
+    rm -rf tensorflow
 
 # Add profiling library support
 ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
