@@ -17,6 +17,7 @@ RUN apt-get update &&\
                        pkg-config \
                        libblas-dev \
                        liblapack-dev \
+                       python-dev \
                        python3-dev \
                        python3-pip \
                        python3-tk \
@@ -35,7 +36,8 @@ RUN apt-get update &&\
 WORKDIR /src
 
 # Install Bazel from source
-ENV BAZEL_VER 0.4.3
+ARG BAZEL_VER=0.4.3
+ENV BAZEL_VER $BAZEL_VER
 ENV BAZEL_INSTALLER bazel-$BAZEL_VER-installer-linux-x86_64.sh
 ENV BAZEL_URL https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VER/$BAZEL_INSTALLER
 RUN wget $BAZEL_URL &&\

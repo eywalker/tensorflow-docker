@@ -1,4 +1,9 @@
 .PHONY: clean build
+cpu-v0.11.0rc0:
+	sudo docker build -t eywalker/tensorflow:v0.11.0rc0 --build-arg TF_TAG=v0.11.0rc0 --build-arg BAZEL_VER=0.3.1 .
+
+cuda-v0.11.0rc0:
+	sudo docker build -f Dockerfile.cuda -t eywalker/tensorflow:v0.11.0rc0-cuda8.0-cudnn5 --build-arg TF_TAG=v0.11.0rc0 --build-arg BAZEL_VER=0.3.1 .
 
 cpu-v0.12.1:
 	sudo docker build -t eywalker/tensorflow:v0.12.1 --build-arg TF_TAG=0.12.1 .
